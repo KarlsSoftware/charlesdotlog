@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PostService } from '../../services/post.service';
 import { BlogPost } from '../../models/post.model';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 @Component({
   selector: 'app-post-detail',
   standalone: true,
@@ -25,6 +25,7 @@ export class PostDetailComponent {
   ) {
     this.post$ = this.route.params.pipe(
       switchMap((params) => this.postService.getPost(+params['id'])),
+      map(post => ({ ...post, content: post.content.replace(/&nbsp;/g, ' ') })),
     );
   }
 }
