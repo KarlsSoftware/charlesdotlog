@@ -1,4 +1,4 @@
-import { Component, inject, signal, afterNextRender } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
@@ -20,26 +20,6 @@ export class AppComponent {
   // also be used outside constructors (in guards, interceptors, factory functions).
   auth = inject(AuthService);
   router = inject(Router);
-
-  readonly displayedTitle = signal('');
-  readonly isTyping = signal(true);
-  private readonly fullTitle = 'carlo.log';
-
-  constructor() {
-    // afterNextRender is browser-only — safe with SSR. Fires once after the
-    // first paint, then types out the title character by character.
-    afterNextRender(() => {
-      let i = 0;
-      const interval = setInterval(() => {
-        i++;
-        this.displayedTitle.set(this.fullTitle.slice(0, i));
-        if (i >= this.fullTitle.length) {
-          clearInterval(interval);
-          this.isTyping.set(false);
-        }
-      }, 100);
-    });
-  }
 
   /** Called by the logout button — clears the token and updates the auth signal */
   onLogout() {
