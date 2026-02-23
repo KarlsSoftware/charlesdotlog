@@ -24,7 +24,6 @@ Frontend/src/app/
         ├── dashboard/       # Admin post list + delete
         └── post-form/       # Create / edit post
 ```
-
 ---
 
 ## Standalone Components

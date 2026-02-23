@@ -1,7 +1,7 @@
 <div class="min-h-screen flex flex-col max-w-2xl mx-auto w-full font-sans text-neutral-900 antialiased overflow-x-hidden">
   <header class="flex justify-between items-baseline px-4 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8 border-b border-neutral-200">
     <!-- routerLink (no brackets) = static string destination — navigates without a full page reload. -->
-    <a routerLink="/" class="text-base font-semibold tracking-tight text-neutral-900 no-underline">carlo.log</a>
+    <a routerLink="/" class="text-base font-semibold tracking-tight text-neutral-900 no-underline">{{ displayedTitle() }}@if (isTyping()) {<span class="typing-cursor">|</span>}</a>
     <nav class="flex gap-3 sm:gap-4 items-baseline">
       <!-- auth.isLoggedIn() reads an Angular Signal. Angular tracks this read and
            automatically re-evaluates this @if block whenever the signal changes —
