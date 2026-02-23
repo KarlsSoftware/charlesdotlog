@@ -21,18 +21,15 @@ var dbPath = Path.Combine(builder.Environment.ContentRootPath, "blog.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
-// Allow the Angular frontend to call this API.
-// CorsOrigins is set in appsettings.json for dev (localhost:4200).
-// On MonsterASP.NET, override with the env var CorsOrigins=https://your-vercel-app.vercel.app
-var corsOrigins = builder.Configuration["CorsOrigins"]?.Split(',')
-    ?? ["http://localhost:4200"];
-
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins(corsOrigins)
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy.WithOrigins(
+            "http://localhost:4200",
+            "https://charlesdotlog.vercel.app"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 // --- JWT setup ---

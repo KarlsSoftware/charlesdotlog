@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -16,9 +16,11 @@ import { AuthService } from './services/auth.service';
  */
 export class AppComponent {
   auth = inject(AuthService);
+  router = inject(Router);
 
   /** Called by the logout button — clears the token and updates the auth signal */
   onLogout() {
     this.auth.logout();
+    this.router.navigate(['/admin/login']);
   }
 }
