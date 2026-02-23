@@ -12,7 +12,7 @@
       </h1>
       <span class="text-sm text-neutral-400">Author: {{ post.author }}</span>
     </header>
-    <div class="ql-content text-base leading-loose text-neutral-700" [innerHTML]="post.content"></div>
+    <div class="ql-content text-base leading-loose text-neutral-700 break-words" [innerHTML]="post.content"></div>
   </article>
 } @else {
   <div class="px-4 sm:px-8 py-16 text-sm text-neutral-400 tracking-wide">Loading...</div>
