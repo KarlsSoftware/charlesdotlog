@@ -97,3 +97,4 @@ Then re-publish and re-upload (steps 1–2 above).
 | Posts not showing after deploy | Database not uploaded | Upload `blog.db` via FTP |
 | Old code still running after FTP upload | IIS cached old app | Re-upload `web.config` to force restart |
 | Build fails with "file in use" | Dev server is running | Stop `dotnet run` first, then publish |
+| `dotnet run` fails locally with "apphost.exe access denied" | Avast sperrt neu erstellte `.exe` beim Build | `UseAppHost=false` im Debug-Block in `MinimalApiDemo.csproj` — betrifft nur lokalen Debug-Build, Deployment (`dotnet publish -c Release`) bleibt unverändert |

@@ -129,13 +129,17 @@ app.MapPost("/api/auth/login", (LoginDto dto) =>
 // Group all post endpoints under /api/posts to avoid repeating the prefix on every route
 var posts = app.MapGroup("/api/posts");
 
-// GET /api/posts — return all posts, newest first
+// GET /api/posts — return published posts only, newest first
 posts.MapGet("/", async (AppDbContext db) =>
-    TypedResults.Ok(await db.BlogPosts.OrderByDescending(p => p.CreatedAt).ToListAsync()));
+    TypedResults.Ok(await db.BlogPosts
+        .Where(p => p.IsPublished)
+        .OrderByDescending(p => p.CreatedAt)
+        .ToListAsync()));
 
 // GET /api/posts/{id} — :int constraint means /api/posts/abc returns 404 without hitting this handler
+// Also filters out unpublished posts so draft URLs return 404 to public visitors
 posts.MapGet("/{id:int}", async (int id, AppDbContext db) =>
-    await db.BlogPosts.FindAsync(id) is BlogPost post
+    await db.BlogPosts.FirstOrDefaultAsync(p => p.Id == id && p.IsPublished) is BlogPost post
         ? Results.Ok(post)
         : Results.NotFound(new { Message = $"Post {id} not found" }));
 
@@ -152,6 +156,18 @@ posts.MapGet("/search", async (string? title, string? author, AppDbContext db) =
 
     return TypedResults.Ok(await query.OrderByDescending(p => p.CreatedAt).ToListAsync());
 });
+
+// GET /api/posts/admin — all posts including drafts (admin only)
+posts.MapGet("/admin", async (AppDbContext db) =>
+    TypedResults.Ok(await db.BlogPosts.OrderByDescending(p => p.CreatedAt).ToListAsync()))
+    .RequireAuthorization();
+
+// GET /api/posts/admin/{id} — single post by id regardless of published status (admin only)
+posts.MapGet("/admin/{id:int}", async (int id, AppDbContext db) =>
+    await db.BlogPosts.FindAsync(id) is BlogPost post
+        ? Results.Ok(post)
+        : Results.NotFound())
+    .RequireAuthorization();
 
 // POST /api/posts — create a new post (admin only)
 posts.MapPost("/", async (CreateBlogPostDto dto, AppDbContext db) =>
