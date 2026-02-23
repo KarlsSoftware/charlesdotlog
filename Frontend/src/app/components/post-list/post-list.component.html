@@ -6,10 +6,10 @@
           <time class="block text-xs font-bold uppercase tracking-widest text-[#C84B11] mb-2">
             {{ post.createdAt | date:'dd MMM yyyy' }}
           </time>
-          <h2 class="text-xl sm:text-2xl font-medium leading-tight text-neutral-900 mb-3 group-hover:opacity-60 transition-opacity">
+          <h2 class="text-xl sm:text-2xl font-medium leading-tight text-neutral-900 mb-3 break-words group-hover:opacity-60 transition-opacity">
             {{ post.title }}
           </h2>
-          <p class="text-sm leading-relaxed text-neutral-500 group-hover:opacity-60 transition-opacity">
+          <p class="text-sm leading-relaxed text-neutral-500 break-words group-hover:opacity-60 transition-opacity">
             {{ post.content | stripHtml:160 }}
           </p>
           <span class="block text-xs text-neutral-400 mt-2 group-hover:opacity-60 transition-opacity">Author: {{ post.author }}</span>
