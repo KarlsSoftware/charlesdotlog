@@ -1,14 +1,31 @@
+<!-- @if ... | async; as posts:
+     The `async` pipe subscribes to the posts$ Observable and assigns the resolved
+     value to the local variable `posts`. While the HTTP request is in flight, the
+     expression is null/undefined, so the @else block shows instead.
+     The async pipe also automatically unsubscribes when the component is destroyed
+     — no manual cleanup or memory leak risk.
+     `@if` / `@else` is Angular 17+ block syntax (replaces *ngIf). -->
 @if (posts$ | async; as posts) {
   <section class="divide-y divide-neutral-200 border-b border-neutral-200">
+    <!-- @for replaces *ngFor. `track post.id` tells Angular's renderer how to
+         identify each item — it reuses existing DOM nodes on re-render instead
+         of destroying and recreating them, which is faster. -->
     @for (post of posts; track post.id) {
       <article>
+        <!-- [routerLink]="['/posts', post.id]" — array syntax builds the path from
+             segments: ['/posts', 3] → "/posts/3". Angular handles the URL join. -->
         <a [routerLink]="['/posts', post.id]" class="block px-4 sm:px-8 py-8 sm:py-10 no-underline text-inherit group transition-opacity">
+          <!-- | date is a built-in Angular pipe that formats a Date or ISO string.
+               'dd MMM yyyy' → "23 Feb 2026". Angular parses ISO strings automatically. -->
           <time class="block text-xs font-bold uppercase tracking-widest text-[#C84B11] mb-2">
             {{ post.createdAt | date:'dd MMM yyyy' }}
           </time>
           <h2 class="text-xl sm:text-2xl font-medium leading-tight text-neutral-900 mb-3 break-words group-hover:opacity-60 transition-opacity">
             {{ post.title }}
           </h2>
+          <!-- | stripHtml:160 — custom pipe (pipes/strip-html.pipe.ts).
+               The :160 is the pipe argument — strip HTML tags, then truncate to
+               160 characters at a word boundary to create a plain-text excerpt. -->
           <p class="text-sm leading-relaxed text-neutral-500 break-words group-hover:opacity-60 transition-opacity">
             {{ post.content | stripHtml:160 }}
           </p>

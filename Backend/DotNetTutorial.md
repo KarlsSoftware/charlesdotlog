@@ -115,6 +115,31 @@ posts.MapPost("/", ...).RequireAuthorization();
 
 ---
 
+## Search Endpoint
+
+Optional query parameters are bound by name automatically — no `[FromQuery]` attribute needed:
+
+```csharp
+// GET /api/posts/search?title=hello&author=carlo
+posts.MapGet("/search", async (string? title, string? author, AppDbContext db) =>
+{
+    // AsQueryable() defers execution — no DB call yet, just building the query object
+    var query = db.BlogPosts.AsQueryable();
+
+    if (!string.IsNullOrEmpty(title))
+        query = query.Where(p => p.Title.Contains(title));
+    if (!string.IsNullOrEmpty(author))
+        query = query.Where(p => p.Author.Contains(author));
+
+    // EF Core translates the full chain to a single SQL SELECT with WHERE clauses
+    return TypedResults.Ok(await query.OrderByDescending(p => p.CreatedAt).ToListAsync());
+});
+```
+
+`AsQueryable()` returns an `IQueryable<T>` instead of evaluating the query immediately. Each `.Where()` call adds a SQL `WHERE` clause — EF Core sends one combined query to the database, not multiple round-trips.
+
+---
+
 ## TypedResults vs Results
 
 `TypedResults.Ok(value)` includes the response type in OpenAPI metadata — better for Swagger docs. `Results.Ok(value)` is untyped; use it when a handler can return different response types (e.g., `Ok` vs `NotFound`). Both work identically at runtime.
@@ -134,6 +159,31 @@ posts.MapPost("/", async (CreateBlogPostDto dto, AppDbContext db) =>
     // ...
 }).RequireAuthorization();
 ```
+
+---
+
+## LoginDto
+
+`LoginDto` lives in `Models/LoginDto.cs` — it's the request body shape for `POST /api/auth/login`:
+
+```csharp
+// `record` is concise for DTOs that are just data containers with no behavior.
+// Single-field — no username, just a password (single-admin blog).
+public record LoginDto(string Password);
+```
+
+---
+
+## Null-Coalescing Throw (`?? throw`)
+
+Used throughout Program.cs to fail fast if required config is missing:
+
+```csharp
+var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
+    ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
+```
+
+`??` returns the left side if it's non-null, otherwise evaluates the right side. Throwing in the right side means the app crashes at startup with a clear message rather than failing later with a cryptic `NullReferenceException`.
 
 ---
 
@@ -202,14 +252,19 @@ await db.SaveChangesAsync()                                   // INSERT / UPDATE
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+        policy.WithOrigins(
+            "http://localhost:4200",           // local Angular dev server
+            "https://carlodotlog.vercel.app"   // production frontend on Vercel
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
 // Pipeline — must be before UseAuthentication
 app.UseCors();   // no args = use default policy
 ```
+
+The browser blocks cross-origin requests unless the server sends `Access-Control-Allow-Origin` headers that match the requesting origin. `WithOrigins(...)` whitelists specific domains — any request from an unlisted origin is rejected by the browser before it even reaches your API logic.
 
 ---
 

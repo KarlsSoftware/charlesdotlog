@@ -1,6 +1,7 @@
 <div class="px-4 sm:px-8 py-8 sm:py-12">
   <div class="flex justify-between items-baseline mb-8">
     <h1 class="text-xl font-semibold">Posts verwalten</h1>
+    <!-- routerLink as a plain attribute (no brackets) = static string route. -->
     <a
       routerLink="/admin/new"
       class="bg-neutral-900 text-white text-xs px-4 py-2 rounded hover:bg-neutral-700 transition-colors no-underline shrink-0 ml-4"
@@ -19,21 +20,27 @@
         <div class="min-w-0">
           <p class="text-sm font-medium truncate">
             {{ post.title }}
+            <!-- @if without @else — only renders the badge when the post is a draft. -->
             @if (!post.isPublished) {
               <span class="text-xs text-neutral-400 ml-2">(Entwurf)</span>
             }
           </p>
+          <!-- &middot; is the HTML entity for the · bullet character. -->
+          <!-- | date:'dd.MM.yyyy' — German date format (day.month.year). -->
           <p class="text-xs text-neutral-400">
             {{ post.author }} &middot; {{ post.createdAt | date: 'dd.MM.yyyy' }}
           </p>
         </div>
         <div class="flex gap-3 shrink-0">
+          <!-- [routerLink]="[path, id]" — dynamic route: array segments are joined to build the URL.
+               ['/admin/edit', post.id] → "/admin/edit/3" -->
           <a
             [routerLink]="['/admin/edit', post.id]"
             class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors no-underline"
           >
             Bearbeiten
           </a>
+          <!-- (click)="..." — event binding: calls the component method when the button is clicked. -->
           <button
             (click)="onDelete(post.id)"
             class="text-xs text-red-400 hover:text-red-600 transition-colors"

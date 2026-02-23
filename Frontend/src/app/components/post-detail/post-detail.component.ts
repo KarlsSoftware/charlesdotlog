@@ -14,8 +14,11 @@ import { Observable, map, switchMap } from 'rxjs';
 export class PostDetailComponent {
   /**
    * ActivatedRoute = Angular's equivalent of [FromRoute] in .NET.
-   * switchMap: when the route param changes, cancel the old HTTP request
-   * and start a new one — prevents stale data.
+   * Gives access to the URL parameters of the currently active route.
+   *
+   * switchMap: every time the route params change (e.g. user navigates from
+   * post/1 to post/2), it cancels the in-flight HTTP request for the old id
+   * and immediately starts a new one — prevents stale data from arriving late.
    */
   post$: Observable<BlogPost>;
 
@@ -24,7 +27,14 @@ export class PostDetailComponent {
     private postService: PostService,
   ) {
     this.post$ = this.route.params.pipe(
-      switchMap((params) => this.postService.getPost(+params['id'])),
+      switchMap((params) =>
+        // The unary + operator converts the route param string (e.g. "42") to a number.
+        // Route params are always strings — the API expects a number.
+        this.postService.getPost(+params['id'])
+      ),
+      // { ...post } is the spread operator — it creates a new object that copies all
+      // fields from `post`, then overrides `content`. We never mutate the original
+      // object because Observables are expected to emit immutable values.
       map(post => ({ ...post, content: post.content.replace(/&nbsp;/g, ' ') })),
     );
   }

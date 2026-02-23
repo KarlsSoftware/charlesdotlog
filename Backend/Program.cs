@@ -38,6 +38,9 @@ builder.Services.AddCors(options =>
 var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
     ?? throw new InvalidOperationException("JWT_SECRET environment variable is not set.");
 
+// Convert the raw secret string to bytes, then wrap in a SymmetricSecurityKey.
+// "Symmetric" means the same key is used to both sign and verify tokens (as opposed
+// to asymmetric RSA keys which have separate public/private halves).
 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
 
 // Tell ASP.NET Core how to validate incoming JWT tokens on protected endpoints
@@ -116,13 +119,19 @@ app.MapPost("/api/auth/login", (LoginDto dto) =>
     if (dto.Password != adminPassword)
         return Results.Unauthorized();
 
-    // Build a JWT with an "Admin" role claim, signed with our secret key
+    // Build the JWT:
+    // - Claims are key/value pairs embedded in the token payload (e.g. role = Admin).
+    //   The middleware on the other end can read them without hitting the database.
+    // - HmacSha256 is the signing algorithm — the token is tamper-proof because
+    //   any modification invalidates the HMAC signature.
     var token = new JwtSecurityToken(
         claims: new[] { new Claim(ClaimTypes.Role, "Admin") },
         expires: DateTime.UtcNow.AddHours(8),
         signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
     );
 
+    // WriteToken() serializes the token object to the compact JWT string format:
+    // "header.payload.signature" — this is what the frontend stores and sends back.
     return Results.Ok(new { Token = new JwtSecurityTokenHandler().WriteToken(token) });
 });
 
@@ -224,3 +233,7 @@ posts.MapDelete("/{id:int}", async (int id, AppDbContext db) =>
 }).RequireAuthorization();
 
 app.Run();
+
+// Makes the compiler-generated Program class public so the test project can reference it
+// via WebApplicationFactory<Program>. Without this the class is internal and inaccessible.
+public partial class Program { }

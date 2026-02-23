@@ -15,6 +15,9 @@ import { AuthService } from './services/auth.service';
  * matches the current URL. The nav bar lives here so it's always visible.
  */
 export class AppComponent {
+  // inject() is the modern Angular DI alternative to constructor injection.
+  // Both work identically — inject() just requires less boilerplate and can
+  // also be used outside constructors (in guards, interceptors, factory functions).
   auth = inject(AuthService);
   router = inject(Router);
 

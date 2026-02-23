@@ -24,8 +24,6 @@
   `dotnet add package Swashbuckle.AspNetCore --version 6.*`
   Then open Swagger at: http://localhost:5192/swagger- 
 
-
-
 ### Additional .NET commands
 - .env -> dotnet add package dotenv.net
 - Delete database: `dotnet ef database drop --force`
@@ -44,8 +42,6 @@
 - `ng new blog-frontend`
 
 > Full frontend guide: [`Frontend/AngularTutorial.md`](Frontend/AngularTutorial.md)
-
----
 
 ## .env Setup (Secrets)
 

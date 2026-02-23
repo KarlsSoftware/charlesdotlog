@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <!-- Show full output for failing tests in the terminal -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Core test framework -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Include="xunit" Version="2.*" />
+    <!-- Lets Visual Studio and the CLI discover xUnit tests -->
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Coverage collector — optional but common in CI pipelines -->
+    <PackageReference Include="coverlet.collector" Version="6.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- Spins up the real ASP.NET Core app in memory so we can send HTTP requests without a real server -->
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.*" />
+    <!-- In-memory database so tests never touch the real SQLite file on disk -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.*" />
+  </ItemGroup>
+
+  <!-- Reference the actual Backend project so we can use its types and Program entry point -->
+  <ItemGroup>
+    <ProjectReference Include="..\Backend\MinimalApiDemo.csproj" />
+  </ItemGroup>
+
+  <!-- Copy the test .env file to the output directory.
+       DotEnv.Load() in Program.cs reads from the current working directory.
+       When dotnet test runs, that directory is where the test DLL lives, so
+       placing .env there ensures the app can start without a real secrets file. -->
+  <ItemGroup>
+    <None Update=".env">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

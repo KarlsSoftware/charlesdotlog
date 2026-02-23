@@ -38,16 +38,7 @@ Output goes to `C:\netminimalapi\Backend\publish\`
 - **Target folder:** `wwwroot`
 - Upload **all files** from `Backend/publish/` → overwrite everything in `wwwroot`
 
-### 3. Upload secrets file
-Upload `Backend/.env` to `wwwroot` (never commit this file — it contains secrets).
-The `.env` file must contain:
-```
-JWT_SECRET=...
-ADMIN_PASSWORD=...
-```
-> See `.env` file locally — do NOT put actual values in this document.
-
-### 4. Upload database (first deploy only, or when migrating data)
+### 3. Upload database (first deploy only, or when migrating data)
 Upload these files to `wwwroot`:
 - `Backend/blog.db`
 - `Backend/blog.db-shm` _(if it exists)_
@@ -86,15 +77,6 @@ policy.WithOrigins(
 ```
 Then re-publish and re-upload (steps 1–2 above).
 
----
 
-## Common Issues
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| `Failed to fetch` / status 0 on frontend | CORS not matching | Check CORS origins in `Program.cs`, re-publish |
-| Site down after enabling SSL | Let's Encrypt provisioning | Wait 2–3 minutes |
-| Posts not showing after deploy | Database not uploaded | Upload `blog.db` via FTP |
-| Old code still running after FTP upload | IIS cached old app | Re-upload `web.config` to force restart |
-| Build fails with "file in use" | Dev server is running | Stop `dotnet run` first, then publish |
-| `dotnet run` fails locally with "apphost.exe access denied" | Avast sperrt neu erstellte `.exe` beim Build | `UseAppHost=false` im Debug-Block in `MinimalApiDemo.csproj` — betrifft nur lokalen Debug-Build, Deployment (`dotnet publish -c Release`) bleibt unverändert |
+

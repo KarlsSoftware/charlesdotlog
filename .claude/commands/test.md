@@ -1,1 +1,0 @@
-Create a txt file named $0. Write in that file: $1     

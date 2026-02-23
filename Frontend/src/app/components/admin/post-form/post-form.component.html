@@ -1,11 +1,23 @@
 <div class="px-4 sm:px-8 py-8 sm:py-12 max-w-lg w-full">
+  <!-- Ternary expression in template interpolation — shows a different heading depending on mode. -->
   <h1 class="text-xl font-semibold mb-8">
     {{ isEdit ? 'Post bearbeiten' : 'Neuer Post' }}
   </h1>
 
+  <!-- #postForm="ngForm" — template reference variable.
+       FormsModule attaches an NgForm directive to every <form> element and exposes it
+       under the name "ngForm". We capture it as `postForm` so we can pass it to
+       onSubmit() and call form.control.markAllAsTouched() to trigger all validation
+       messages at once when the user submits an incomplete form. -->
   <form #postForm="ngForm" (ngSubmit)="onSubmit(postForm)" class="space-y-5">
     <div>
       <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-1">Titel *</label>
+      <!-- #titleField="ngModel" — template reference to this field's NgModel instance.
+           Exposes .invalid (has errors) and .touched (user has focused + blurred it).
+           We use these below to show the red border and error message only after the
+           user has actually interacted with the field — not immediately on page load. -->
+      <!-- [class.border-red-400]="..." — Angular adds the CSS class only when the
+           expression is true, and removes it when false. This drives the error highlight. -->
       <input
         [(ngModel)]="title"
         name="title"
@@ -23,6 +35,11 @@
 
     <div>
       <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-1">Inhalt</label>
+      <!-- quill-editor is the ngx-quill component — a rich-text WYSIWYG editor.
+           [(ngModel)] syncs the HTML string to the `content` property.
+           (onContentChanged) is a Quill-specific output event that fires on every
+           keystroke; we update `content` directly from it because Quill's ngModel
+           binding can occasionally lag behind rapid typing. -->
       <quill-editor
         [(ngModel)]="content"
         name="content"
@@ -49,6 +66,7 @@
       }
     </div>
 
+    <!-- Checkbox with two-way binding — no template reference needed since there's no validation. -->
     <label class="flex items-center gap-2 text-sm">
       <input type="checkbox" [(ngModel)]="isPublished" name="isPublished" />
       Veröffentlicht
@@ -61,6 +79,7 @@
       >
         {{ isEdit ? 'Speichern' : 'Erstellen' }}
       </button>
+      <!-- type="button" prevents this from accidentally triggering (ngSubmit) on the form. -->
       <button
         type="button"
         (click)="onCancel()"

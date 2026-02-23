@@ -1,10 +1,18 @@
 <div class="px-4 sm:px-8 py-12 sm:py-16 max-w-sm mx-auto w-full">
   <h1 class="text-xl font-semibold mb-8">Admin Login</h1>
 
+  <!-- (ngSubmit) fires when the form is submitted (Enter key or submit button click).
+       Using (ngSubmit) on the form rather than (click) on the button is the Angular
+       Forms convention — it respects the form's own submit lifecycle. -->
   <form (ngSubmit)="onLogin()">
     <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-2">
       Passwort
     </label>
+    <!-- [(ngModel)] = two-way data binding (the "banana in a box" syntax):
+         [ngModel]      → pushes the component's `password` value INTO the input
+         (ngModelChange) → updates `password` whenever the user TYPES
+         Both directions together keep the component property and the DOM in sync.
+         `name="password"` is required by Angular Forms to register this control. -->
     <input
       type="password"
       [(ngModel)]="password"
@@ -13,6 +21,7 @@
       placeholder="Admin-Passwort eingeben"
     />
 
+    <!-- Only renders the error paragraph when `error` is a non-empty string (truthy). -->
     @if (error) {
       <p class="text-red-500 text-xs mt-2">{{ error }}</p>
     }

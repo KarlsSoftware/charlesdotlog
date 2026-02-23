@@ -1,9 +1,13 @@
+<!-- | async subscribes to post$ and unwraps the emitted value as `post`.
+     @else shows "Loading..." while the HTTP request is in flight. -->
 @if (post$ | async; as post) {
   <article class="px-4 sm:px-8 py-8 sm:py-10">
+    <!-- routerLink without brackets = static string — no JS expression, just a plain route. -->
     <a routerLink="/" class="inline-block text-xs font-bold tracking-wide text-neutral-900 no-underline mb-10 hover:text-neutral-500 transition-colors">
       &larr; Back
     </a>
     <header class="mb-6 pb-8 border-b border-neutral-200">
+      <!-- | date:'dd MMM yyyy' — built-in Angular pipe, formats the ISO date string from the API. -->
       <time class="block text-xs font-bold uppercase tracking-widest text-[#C84B11] mb-4">
         {{ post.createdAt | date:'dd MMM yyyy' }}
       </time>
@@ -12,6 +16,9 @@
       </h1>
       <span class="text-sm text-neutral-400">Author: {{ post.author }}</span>
     </header>
+    <!-- [innerHTML] renders raw HTML stored in the database (written by the Quill editor).
+         This is safe here because only the admin can author posts — not end users.
+         The .ql-content class applies Quill's Snow theme styles for correct heading/list formatting. -->
     <div class="ql-content text-base leading-loose text-neutral-700" [innerHTML]="post.content"></div>
   </article>
 } @else {
