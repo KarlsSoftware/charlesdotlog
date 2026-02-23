@@ -23,7 +23,7 @@ export class DashboardComponent implements OnInit {
   loadPosts() {
     // .subscribe() here (not async pipe) so we can store results in a local array
     // and refresh the list after a delete without leaving and re-entering the route
-    this.postService.getPosts().subscribe((posts) => (this.posts = posts));
+    this.postService.getAllPosts().subscribe((posts) => (this.posts = posts));
   }
 
   onDelete(id: number) {

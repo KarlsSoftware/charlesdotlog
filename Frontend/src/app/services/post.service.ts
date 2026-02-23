@@ -40,4 +40,14 @@ export class PostService {
   deletePost(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  /** GET /api/posts/admin — all posts including drafts (admin only) */
+  getAllPosts(): Observable<BlogPost[]> {
+    return this.http.get<BlogPost[]>(`${this.apiUrl}/admin`);
+  }
+
+  /** GET /api/posts/admin/:id — single post by id regardless of published status (admin only) */
+  getPostAdmin(id: number): Observable<BlogPost> {
+    return this.http.get<BlogPost>(`${this.apiUrl}/admin/${id}`);
+  }
 }

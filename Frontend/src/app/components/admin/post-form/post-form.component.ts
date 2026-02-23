@@ -43,7 +43,7 @@ export class PostFormComponent implements OnInit {
       this.isEdit = true;
       this.editId = +id; // + converts the route string param to a number
       // Pre-fill the form fields with the existing post's data
-      this.postService.getPost(this.editId).subscribe((post) => {
+      this.postService.getPostAdmin(this.editId).subscribe((post) => {
         this.title = post.title;
         this.content = post.content;
         this.author = post.author;

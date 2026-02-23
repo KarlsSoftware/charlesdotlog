@@ -12,6 +12,7 @@
           <p class="text-sm leading-relaxed text-neutral-500 group-hover:opacity-60 transition-opacity">
             {{ post.content | stripHtml:160 }}
           </p>
+          <span class="block text-xs text-neutral-400 mt-2 group-hover:opacity-60 transition-opacity">Author: {{ post.author }}</span>
         </a>
       </article>
     }
