@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
         policy.WithOrigins(
             "http://localhost:4200",
-            "https://charlesdotlog.vercel.app"
+            "https://carlodotlog.vercel.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod());

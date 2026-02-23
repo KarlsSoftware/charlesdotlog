@@ -2,7 +2,7 @@
 
 ## Stack
 - **Backend:** ASP.NET Core Minimal API (.NET 9) → MonsterASP.NET (`charleslog.runasp.net`)
-- **Frontend:** Angular 19 SPA → Vercel (`charlesdotlog.vercel.app`)
+- **Frontend:** Angular 19 SPA → Vercel (`carlodotlog.vercel.app`)
 - **Database:** SQLite (`blog.db`) — persists on MonsterASP.NET file system
 
 ---
@@ -71,7 +71,7 @@ Vercel auto-deploys on every push to GitHub (`master` branch).
 To trigger a manual redeploy: Vercel dashboard → project → **Redeploy**.
 
 ### Verify frontend
-Visit `https://charlesdotlog.vercel.app` — blog should load and show posts.
+Visit `https://carlodotlog.vercel.app` — blog should load and show posts.
 
 ---
 
@@ -81,7 +81,7 @@ Edit `Backend/Program.cs` — find the CORS block:
 ```csharp
 policy.WithOrigins(
     "http://localhost:4200",
-    "https://charlesdotlog.vercel.app"   // ← update this
+    "https://carlodotlog.vercel.app"   // ← update this
 )
 ```
 Then re-publish and re-upload (steps 1–2 above).
