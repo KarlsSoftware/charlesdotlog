@@ -1,0 +1,73 @@
+<div class="px-4 sm:px-8 py-8 sm:py-12 max-w-lg w-full">
+  <h1 class="text-xl font-semibold mb-8">
+    {{ isEdit ? 'Post bearbeiten' : 'Neuer Post' }}
+  </h1>
+
+  <form #postForm="ngForm" (ngSubmit)="onSubmit(postForm)" class="space-y-5">
+    <div>
+      <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-1">Titel *</label>
+      <input
+        [(ngModel)]="title"
+        name="title"
+        required
+        #titleField="ngModel"
+        class="w-full border rounded px-3 py-2 text-sm focus:outline-none"
+        [class.border-red-400]="titleField.invalid && titleField.touched"
+        [class.border-neutral-200]="!(titleField.invalid && titleField.touched)"
+        [class.focus:border-neutral-900]="!(titleField.invalid && titleField.touched)"
+      />
+      @if (titleField.invalid && titleField.touched) {
+        <p class="text-red-500 text-xs mt-1">Titel ist erforderlich.</p>
+      }
+    </div>
+
+    <div>
+      <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-1">Inhalt</label>
+      <quill-editor
+        [(ngModel)]="content"
+        name="content"
+        [modules]="quillModules"
+        (onContentChanged)="content = $event.html ?? ''"
+        class="w-full"
+      ></quill-editor>
+    </div>
+
+    <div>
+      <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-1">Autor *</label>
+      <input
+        [(ngModel)]="author"
+        name="author"
+        required
+        #authorField="ngModel"
+        class="w-full border rounded px-3 py-2 text-sm focus:outline-none"
+        [class.border-red-400]="authorField.invalid && authorField.touched"
+        [class.border-neutral-200]="!(authorField.invalid && authorField.touched)"
+        [class.focus:border-neutral-900]="!(authorField.invalid && authorField.touched)"
+      />
+      @if (authorField.invalid && authorField.touched) {
+        <p class="text-red-500 text-xs mt-1">Autor ist erforderlich.</p>
+      }
+    </div>
+
+    <label class="flex items-center gap-2 text-sm">
+      <input type="checkbox" [(ngModel)]="isPublished" name="isPublished" />
+      Veröffentlicht
+    </label>
+
+    <div class="flex gap-3 pt-2">
+      <button
+        type="submit"
+        class="bg-neutral-900 text-white text-sm px-6 py-2 rounded hover:bg-neutral-700 transition-colors"
+      >
+        {{ isEdit ? 'Speichern' : 'Erstellen' }}
+      </button>
+      <button
+        type="button"
+        (click)="onCancel()"
+        class="text-sm text-neutral-400 hover:text-neutral-900 transition-colors"
+      >
+        Abbrechen
+      </button>
+    </div>
+  </form>
+</div>

@@ -16,15 +16,21 @@ DotEnv.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Register EF Core with SQLite — creates one AppDbContext per HTTP request (Scoped lifetime)
+// ContentRootPath ensures blog.db is always found next to the app, regardless of working directory
+var dbPath = Path.Combine(builder.Environment.ContentRootPath, "blog.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=blog.db"));
+    options.UseSqlite($"Data Source={dbPath}"));
 
-// Allow the Angular frontend (port 4200) to call this API.
-// Without CORS, browsers block cross-origin requests entirely.
+// Allow the Angular frontend to call this API.
+// CorsOrigins is set in appsettings.json for dev (localhost:4200).
+// On MonsterASP.NET, override with the env var CorsOrigins=https://your-vercel-app.vercel.app
+var corsOrigins = builder.Configuration["CorsOrigins"]?.Split(',')
+    ?? ["http://localhost:4200"];
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod());
 });

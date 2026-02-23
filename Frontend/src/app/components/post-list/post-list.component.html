@@ -1,0 +1,21 @@
+@if (posts$ | async; as posts) {
+  <section class="divide-y divide-neutral-200 border-b border-neutral-200">
+    @for (post of posts; track post.id) {
+      <article>
+        <a [routerLink]="['/posts', post.id]" class="block px-4 sm:px-8 py-8 sm:py-10 no-underline text-inherit group transition-opacity">
+          <time class="block text-xs font-bold uppercase tracking-widest text-[#C84B11] mb-2">
+            {{ post.createdAt | date:'dd MMM yyyy' }}
+          </time>
+          <h2 class="text-xl sm:text-2xl font-medium leading-tight text-neutral-900 mb-3 group-hover:opacity-60 transition-opacity">
+            {{ post.title }}
+          </h2>
+          <p class="text-sm leading-relaxed text-neutral-500 group-hover:opacity-60 transition-opacity">
+            {{ post.content | stripHtml:160 }}
+          </p>
+        </a>
+      </article>
+    }
+  </section>
+} @else {
+  <div class="px-4 sm:px-8 py-16 text-sm text-neutral-400 tracking-wide">Loading...</div>
+}

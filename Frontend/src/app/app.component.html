@@ -1,0 +1,18 @@
+<div class="min-h-screen flex flex-col max-w-2xl mx-auto w-full font-sans text-neutral-900 antialiased overflow-x-hidden">
+  <header class="flex justify-between items-baseline px-4 sm:px-8 pt-8 sm:pt-10 pb-6 sm:pb-8 border-b border-neutral-200">
+    <a routerLink="/" class="text-base font-semibold tracking-tight text-neutral-900 no-underline">carlo.log</a>
+    <nav class="flex gap-3 sm:gap-4 items-baseline">
+@if (auth.isLoggedIn()) {
+        <button (click)="onLogout()" class="text-xs font-bold uppercase tracking-widest text-orange-600 hover:text-orange-800 transition-colors">Logout</button>
+      }
+    </nav>
+  </header>
+
+  <main class="flex-1 min-w-0">
+    <router-outlet />
+  </main>
+
+  <footer class="px-4 sm:px-8 py-8 border-t border-neutral-200 text-xs text-neutral-300 tracking-wide">
+    &copy; 2026 Carlo
+  </footer>
+</div>

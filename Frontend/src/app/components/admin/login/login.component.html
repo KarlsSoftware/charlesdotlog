@@ -1,0 +1,27 @@
+<div class="px-4 sm:px-8 py-12 sm:py-16 max-w-sm mx-auto w-full">
+  <h1 class="text-xl font-semibold mb-8">Admin Login</h1>
+
+  <form (ngSubmit)="onLogin()">
+    <label class="block text-xs uppercase tracking-widest text-neutral-400 mb-2">
+      Passwort
+    </label>
+    <input
+      type="password"
+      [(ngModel)]="password"
+      name="password"
+      class="w-full border border-neutral-200 rounded px-3 py-2 text-sm focus:outline-none focus:border-neutral-900"
+      placeholder="Admin-Passwort eingeben"
+    />
+
+    @if (error) {
+      <p class="text-red-500 text-xs mt-2">{{ error }}</p>
+    }
+
+    <button
+      type="submit"
+      class="mt-6 w-full bg-neutral-900 text-white text-sm py-2 rounded hover:bg-neutral-700 transition-colors"
+    >
+      Einloggen
+    </button>
+  </form>
+</div>

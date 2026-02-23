@@ -1,0 +1,47 @@
+<div class="px-4 sm:px-8 py-8 sm:py-12">
+  <div class="flex justify-between items-baseline mb-8">
+    <h1 class="text-xl font-semibold">Posts verwalten</h1>
+    <a
+      routerLink="/admin/new"
+      class="bg-neutral-900 text-white text-xs px-4 py-2 rounded hover:bg-neutral-700 transition-colors no-underline shrink-0 ml-4"
+    >
+      + Neuer Post
+    </a>
+  </div>
+
+  @if (posts.length === 0) {
+    <p class="text-neutral-400 text-sm">Noch keine Posts vorhanden.</p>
+  }
+
+  <ul class="space-y-4">
+    @for (post of posts; track post.id) {
+      <li class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 border-b border-neutral-100 pb-4">
+        <div class="min-w-0">
+          <p class="text-sm font-medium truncate">
+            {{ post.title }}
+            @if (!post.isPublished) {
+              <span class="text-xs text-neutral-400 ml-2">(Entwurf)</span>
+            }
+          </p>
+          <p class="text-xs text-neutral-400">
+            {{ post.author }} &middot; {{ post.createdAt | date: 'dd.MM.yyyy' }}
+          </p>
+        </div>
+        <div class="flex gap-3 shrink-0">
+          <a
+            [routerLink]="['/admin/edit', post.id]"
+            class="text-xs text-neutral-500 hover:text-neutral-900 transition-colors no-underline"
+          >
+            Bearbeiten
+          </a>
+          <button
+            (click)="onDelete(post.id)"
+            class="text-xs text-red-400 hover:text-red-600 transition-colors"
+          >
+            Löschen
+          </button>
+        </div>
+      </li>
+    }
+  </ul>
+</div>
