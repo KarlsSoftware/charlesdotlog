@@ -1,12 +1,28 @@
-import { RenderMode, ServerRoute } from '@angular/ssr';
+import { RenderMode, PrerenderFallback, ServerRoute } from '@angular/ssr';
+import { inject } from '@angular/core';
+import { lastValueFrom } from 'rxjs';
+import { PostService } from './services/post.service';
 
 export const serverRoutes: ServerRoute[] = [
   {
-    // '**' matches every route — all pages use client-side rendering (CSR).
-    // RenderMode.Client means Angular does not pre-render HTML on the server;
-    // the browser receives the same index.html shell and boots Angular itself.
-    // Change to RenderMode.Prerender for static routes that should be fully
-    // baked into HTML at build time (e.g. a static "About" page).
+    path: '',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'posts/:id',
+    renderMode: RenderMode.Prerender,
+    fallback: PrerenderFallback.Client,
+    async getPrerenderParams() {
+      const postService = inject(PostService);
+      const posts = await lastValueFrom(postService.getPosts());
+      return (posts ?? []).map((post) => ({ id: String(post.id) }));
+    },
+  },
+  {
+    path: 'admin/**',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: '**',
     renderMode: RenderMode.Client,
   },

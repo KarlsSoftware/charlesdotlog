@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -15,9 +16,10 @@ import { environment } from '../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenKey = 'admin_token';
+  private platformId = inject(PLATFORM_ID);
 
   /** Reactive signal — true when a token exists in sessionStorage */
-  isLoggedIn = signal(!!sessionStorage.getItem(this.tokenKey));
+  isLoggedIn = signal(isPlatformBrowser(this.platformId) && !!sessionStorage.getItem(this.tokenKey));
 
   constructor(private http: HttpClient) {}
 
@@ -41,6 +43,7 @@ export class AuthService {
 
   /** Read raw token (used by the HTTP interceptor) */
   getToken(): string | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
     return sessionStorage.getItem(this.tokenKey);
   }
 }

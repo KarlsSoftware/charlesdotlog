@@ -1,4 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
 
 /**
  * Strips HTML tags, decodes entities (e.g. &nbsp;), and truncates at a word boundary.
@@ -6,11 +7,14 @@ import { Pipe, PipeTransform } from '@angular/core';
  */
 @Pipe({ name: 'stripHtml', standalone: true })
 export class StripHtmlPipe implements PipeTransform {
+  private document = inject(DOCUMENT);
+
   transform(value: string, limit = 0): string {
     if (!value) return '';
 
-    // Use the browser DOM to strip tags and decode HTML entities cleanly
-    const div = document.createElement('div');
+    // DOCUMENT token is provided by @angular/platform-server during SSR,
+    // so this works in both the browser and the Node.js prerender environment.
+    const div = this.document.createElement('div');
     div.innerHTML = value;
     const text = (div.textContent ?? '').replace(/\s+/g, ' ').trim();
 

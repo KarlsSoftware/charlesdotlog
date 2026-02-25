@@ -32,8 +32,8 @@
             ],
             "scripts": [],
             "server": "src/main.server.ts",
-            "prerender": false,
-            "ssr": false
+            "ssr": true,
+            "outputMode": "static"
           },
           "configurations": {
             "production": {

@@ -124,7 +124,11 @@ effect(() => console.log('count is', count()));
 In `AuthService`:
 
 ```typescript
-isLoggedIn = signal(!!sessionStorage.getItem(this.tokenKey));
+private platformId = inject(PLATFORM_ID);
+
+// isPlatformBrowser guard: sessionStorage doesn't exist in Node.js (SSG build).
+// Without this, ng build crashes when prerendering runs AuthService server-side.
+isLoggedIn = signal(isPlatformBrowser(this.platformId) && !!sessionStorage.getItem(this.tokenKey));
 
 login(password: string) {
   return this.http.post<{ token: string }>(...).pipe(
@@ -142,6 +146,8 @@ logout() {
 ```
 
 `.pipe()` chains RxJS operators onto an Observable. `tap()` runs a side effect — here, storing the token and updating the signal — without changing the emitted value. Without `tap`, you'd need to `.subscribe()` and handle it manually.
+
+`isPlatformBrowser(platformId)` returns `true` in the browser and `false` in Node.js (where Angular runs during prerendering). The signal initialiser short-circuits on `false`, skipping the `sessionStorage` call entirely — which would throw a `ReferenceError` in Node.js.
 
 Components reading `auth.isLoggedIn()` re-render automatically when it changes.
 
@@ -426,16 +432,20 @@ Protected routes (/admin, /admin/new, /admin/edit/:id)
 
 ---
 
-## SSR (Server-Side Rendering)
+## SSG (Static Prerendering)
 
-The project uses Angular Universal SSR. Two extra config files handle this:
+The project uses Angular's SSG (Static Site Generation) mode — routes are baked into static
+HTML files at **build time**, not rendered on demand by a live server. Vercel serves those
+files straight from its CDN, so the browser gets real content immediately (no blank-page flash).
+
+Two extra config files handle this:
 
 **`app.config.server.ts`** — server-only providers, merged with the main `app.config.ts`:
 
 ```typescript
 const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(),               // activates Angular Universal
+    provideServerRendering(),               // activates the Angular server renderer
     provideServerRoutesConfig(serverRoutes) // per-route render mode config
   ]
 };
@@ -447,14 +457,37 @@ export const config = mergeApplicationConfig(appConfig, serverConfig);
 
 ```typescript
 export const serverRoutes: ServerRoute[] = [
-  { path: '**', renderMode: RenderMode.Client },
+  {
+    path: '',
+    renderMode: RenderMode.Prerender,      // home page → static HTML at build time
+  },
+  {
+    path: 'posts/:id',
+    renderMode: RenderMode.Prerender,      // one HTML file per blog post
+    fallback: PrerenderFallback.Client,    // new posts (not yet built) fall back to CSR
+    async getPrerenderParams() {
+      // Called during ng build — fetches all post IDs from the live backend
+      const postService = inject(PostService);
+      const posts = await lastValueFrom(postService.getPosts());
+      return (posts ?? []).map((post) => ({ id: String(post.id) }));
+    },
+  },
+  {
+    path: 'admin/**',
+    renderMode: RenderMode.Client,         // admin — behind auth, no prerender benefit
+  },
+  {
+    path: '**',
+    renderMode: RenderMode.Client,
+  },
 ];
 ```
 
-`RenderMode.Client` means all routes use normal client-side rendering — no pre-rendering.
-`RenderMode.Prerender` would bake the route into static HTML at build time.
+`RenderMode.Prerender` bakes the route into a static HTML file at build time.
+`RenderMode.Client` means normal client-side rendering — Angular runs in the browser as usual.
+`getPrerenderParams()` tells Angular what concrete URLs to generate for parameterised routes
+(`:id`). It calls the live backend during the build to get all post IDs.
 
-In practice, SSR means the first HTML the browser receives already contains real content
-(good for SEO and perceived performance). `provideClientHydration(withEventReplay())` in
-`app.config.ts` then "wakes up" Angular on top of that HTML instead of rebuilding the DOM.
+`provideClientHydration(withEventReplay())` in `app.config.ts` "wakes up" Angular on top of
+the pre-rendered HTML instead of rebuilding the DOM from scratch.
 
